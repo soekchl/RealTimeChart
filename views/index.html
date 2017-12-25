@@ -10,6 +10,7 @@
 			var series_
 			var arr = new Array()
 			var wsUri = "ws://localhost:8081/ws"
+			var showMax = 100
 			init()
 
 
@@ -41,7 +42,7 @@
 			
 			function myAddPoint(value) {
 			    // 当节点超过100个的时候
-			    if (series_.data.length < 110) {
+			    if (series_.data.length < showMax) {
 			        // 增加一个点 不删除最后一个
 			        series_.addPoint([(new Date()).getTime(), value], true, false);
 			    } else {
