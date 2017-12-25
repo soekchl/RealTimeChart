@@ -10,7 +10,7 @@
 			var series_
 			var arr = new Array()
 			var wsUri = "ws://localhost:8081/ws"
-			var showMax = 100
+			var showMax = 110
 			init()
 
 
@@ -21,6 +21,20 @@
 				{{end}}
 
 				connect(wsUri, recvMsg)
+			}
+
+			function setShowMax() {
+				let v = document.getElementById("input-show-max").value
+				try{
+					let num = Number(v)
+					if (num < 10) {
+						alert("不能小于10")
+						return
+					}
+					showMax = num
+				}catch(err){
+					console.log(err)
+				}
 			}
 
 			function recvMsg(buff) {
@@ -131,6 +145,8 @@
 	</HEAD>
 
 	<BODY>
+		<input type="number" min="10" placeholder="请输入显示节点个数" id="input-show-max">
+		<button onclick="setShowMax()">设定</button>
 		<div id="container" style="width:100%;height:100%;margin:0 auto;"></div>
 		<div style="text-align:center;clear:both;"></div>
 	</BODY>
