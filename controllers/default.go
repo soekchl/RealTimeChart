@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/astaxie/beego"
+	. "github.com/soekchl/myUtils"
 )
 
 type MainController struct {
@@ -15,7 +16,8 @@ type MainController struct {
 var (
 	dataList      []int32 // 目前保存110个
 	dataListMutex sync.RWMutex
-	max_length    = 100
+	max_length          = 100
+	deviation     int32 = 5
 )
 
 func init() {
@@ -24,21 +26,22 @@ func init() {
 		min int32 = 1
 		max int32 = 100
 	)
-
+	rand.Seed(time.Now().UnixNano())
 	dataListMutex.Lock()
 	defer dataListMutex.Unlock()
 
 	for i := 0; i < max_length; i++ {
-		r = rand.Int31n(max-min) + min
+		r = rand.Int31n(max-min+1) + min
 		dataList = append(dataList, r)
-		max = r + 10
-		min = r - 10
+		max = r + deviation
+		min = r - deviation
+		Debug(max, " ", min)
 	}
 
 	go func() {
 		for {
 			select {
-			case <-time.After(time.Second * 5):
+			case <-time.After(time.Second):
 				getOne()
 			}
 		}
@@ -54,9 +57,10 @@ func getOne() {
 	dataListMutex.Lock()
 	defer dataListMutex.Unlock()
 
-	max := dataList[max_length-1] + 10
-	min := dataList[max_length-1] - 10
-	dataList = append(dataList, rand.Int31n(max-min)+min)
+	max := dataList[max_length-1] + deviation
+	min := dataList[max_length-1] - deviation
+	dataList = append(dataList, rand.Int31n(max-min+1)+min)
+	Debug(max, " ", min)
 	dataList = dataList[1:]
 	sendWebSocket(EncodeInt32(dataList[max_length-1]))
 }
